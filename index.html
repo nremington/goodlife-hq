@@ -657,21 +657,80 @@
 </div>
 
 <script>
+// ── Supabase config ──
+const SUPABASE_URL = 'https://olyahaqdbuvbknqtnkks.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9seWFoYXFkYnV2YmtucXRua2tzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMTk1MzYsImV4cCI6MjA5NjU5NTUzNn0.tleA6k-DY39pp0Of4Z3nvZ9Uw3UfG0tjuZzPH9RyzhA';
+const TABLE = 'goodlife_hq';
+const ROW_ID = 'main';
+
 // ── State ──
 let state = {
   gratitude: [],    // { id, text, date }
   affirmations: []  // { id, text, date }
 };
 
-function loadState() {
+let saveTimer = null;
+
+// ── localStorage (always-on fallback) ──
+function loadFromLocal() {
   try {
     const saved = localStorage.getItem('goodlife-hq');
     if (saved) state = JSON.parse(saved);
   } catch(e) {}
 }
 
-function saveState() {
+function saveToLocal() {
   localStorage.setItem('goodlife-hq', JSON.stringify(state));
+}
+
+// ── Supabase sync ──
+async function loadFromSupabase() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${ROW_ID}&select=data`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (rows.length && rows[0].data) {
+      const remote = JSON.parse(rows[0].data);
+      // Only update if remote has content, to avoid wiping local edits on a race
+      if (remote && (remote.gratitude || remote.affirmations)) {
+        state = remote;
+        saveToLocal();
+        renderGratitude();
+        renderAffirmations();
+      }
+    }
+  } catch(e) {
+    console.warn('Supabase load failed, using localStorage:', e);
+  }
+}
+
+async function saveToSupabase() {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ id: ROW_ID, data: JSON.stringify(state) })
+    });
+  } catch(e) {
+    console.warn('Supabase save failed, localStorage still saved:', e);
+  }
+}
+
+// ── Unified save: localStorage immediately, Supabase debounced ──
+function saveState() {
+  saveToLocal();
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveToSupabase(), 1000);
 }
 
 function uid() {
@@ -922,9 +981,12 @@ document.getElementById('aff-input').addEventListener('keydown', function(e) {
 });
 
 // ── Init ──
-loadState();
+// 1. Load localStorage immediately so the app feels instant
+loadFromLocal();
 renderGratitude();
 renderAffirmations();
+// 2. Then fetch from Supabase in the background and update if newer data exists
+loadFromSupabase();
 </script>
 
 </body>
