@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoodLife HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Satisfy&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ── HQ Suite brand tokens ── */
+  :root {
+    /* Shared neutrals */
+    --cream: #FDFAF6;
+    --white: #FFFFFF;
+    --ink: #2D2A26;
+    --ink-light: #6B6560;
+    --ink-faint: #B8B3AE;
+    --border: #EDE8E2;
+
+    /* GoodLife HQ signature */
+    --goodlife: #F0A500;
+    --goodlife-pale: #FEF6DC;
+    --goodlife-deep: #C07A00;
+    --goodlife-dark: #7A4D00;
+
+    /* Brand radius scale */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+
+    /* Shadows */
+    --shadow-soft: 0 2px 12px rgba(45,42,38,0.07);
+    --shadow-card: 0 4px 20px rgba(45,42,38,0.09);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    background: var(--goodlife-pale);
+    border-bottom: 2px solid var(--goodlife);
+    padding: 20px 20px 0;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-icon { font-size: 26px; }
+
+  .app-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+
+  /* Satisfy subtitle — brand spec: greetings/captions only */
+  .app-header .subtitle {
+    font-family: 'Satisfy', cursive;
+    font-size: 15px;
+    color: var(--ink-light);
+    margin-top: 2px;
+    margin-left: 36px;
+  }
+
+  .tab-row {
+    display: flex;
+    gap: 4px;
+    margin-top: 16px;
+  }
+  .tab-btn {
+    background: rgba(45,42,38,0.06);
+    border: none;
+    color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 20px;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .tab-btn.active {
+    background: var(--cream);
+    color: var(--goodlife-dark);
+  }
+
+  /* ── Main ── */
+  .main {
+    padding: 24px 16px 60px;
+    max-width: 660px;
+    margin: 0 auto;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Tab intro text — Nunito body ── */
+  .tab-intro {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  /* ── Input card (gratitude note box) ── */
+  /* Note box spec: cream bg, border var(--border), radius-md 14px, coral focus */
+  .input-card {
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 16px 14px;
+    margin-bottom: 22px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .input-card:focus-within {
+    border-color: var(--goodlife);
+    background: var(--white);
+  }
+  .input-card textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    resize: none;
+    min-height: 72px;
+    line-height: 1.6;
+    padding: 0;
+  }
+  .input-card textarea:focus { outline: none; }
+  .input-card textarea::placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+  .input-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .input-hint {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-faint);
+  }
+
+  /* Primary button spec: coral, pill (100px), Nunito 700, coral shadow */
+  .add-btn {
+    background: var(--goodlife);
+    color: var(--white);
+    border: none;
+    border-radius: 100px;
+    padding: 9px 22px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(240,165,0,0.30);
+    letter-spacing: 0.01em;
+  }
+  .add-btn:hover {
+    background: var(--goodlife-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(240,165,0,0.38);
+  }
+
+  /* ── Date section cards ── */
+  /* Card spec: radius-lg 20px, white bg, shadow-card, border */
+  .date-section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
+  .date-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--goodlife-pale);
+  }
+  .date-section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--goodlife-dark);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .date-section-count {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-light);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 2px 10px;
+  }
+  .date-entries { padding: 4px 0; }
+
+  .g-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  .g-entry:last-child { border-bottom: none; }
+  .g-entry:hover { background: var(--goodlife-pale); }
+
+  .g-bullet {
+    font-size: 13px;
+    color: var(--goodlife);
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+  .g-text {
+    flex: 1;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    word-break: break-word;
+  }
+
+  /* Action icon buttons spec: 36x36, radius 10px, 1.5px border(--border), white bg */
+  /* Edit hover: butter yellow bg + golden border. Delete hover: soft red bg + blush border */
+  .g-entry-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .g-entry:hover .g-entry-actions { opacity: 1; }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .icon-btn:hover { transform: scale(1.06); }
+  .icon-btn.edit:hover { background: #FFF8E6; border-color: #F5C842; }
+  .icon-btn.delete:hover { background: #FFF0EE; border-color: #FCCCC6; }
+
+  /* ── Inline edit textarea (note box style) ── */
+  .g-edit-wrap { flex: 1; }
+  .g-text-edit {
+    width: 100%;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    resize: none;
+    line-height: 1.6;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+  }
+  .g-text-edit:focus {
+    border-color: var(--goodlife);
+    background: var(--white);
+  }
+  .g-edit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  /* Secondary / save inline buttons */
+  .small-btn {
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .small-btn:hover { border-color: var(--ink-faint); }
+  .small-btn.save {
+    background: var(--goodlife);
+    color: var(--white);
+    border-color: var(--goodlife);
+    box-shadow: 0 2px 8px rgba(240,165,0,0.25);
+  }
+  .small-btn.save:hover {
+    background: var(--goodlife-deep);
+    border-color: var(--goodlife-deep);
+  }
+
+  /* ── Empty states ── */
+  /* Spec: dashed border, white bg, radius-lg, Outfit 800 title, Satisfy flavor line */
+  .empty-state {
+    text-align: center;
+    padding: 44px 20px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+  }
+  .empty-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .empty-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .empty-sub {
+    font-family: 'Satisfy', cursive;
+    font-size: 17px;
+    color: var(--ink-faint);
+    margin-bottom: 20px;
+  }
+  .empty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--goodlife);
+    color: var(--white);
+    border: none;
+    border-radius: 100px;
+    padding: 10px 24px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(240,165,0,0.30);
+  }
+  .empty-btn:hover {
+    background: var(--goodlife-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(240,165,0,0.38);
+  }
+
+  /* ── Affirmations input ── */
+  .aff-input-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0;
+    margin-bottom: 22px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .aff-input-card:focus-within {
+    border-color: var(--goodlife);
+  }
+  .aff-prefix-bar {
+    background: var(--goodlife-pale);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--goodlife-dark);
+  }
+  /* Affirmation textarea is a note box: cream bg, turns white on focus */
+  .aff-textarea {
+    width: 100%;
+    border: none;
+    background: var(--cream);
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    resize: none;
+    min-height: 64px;
+    line-height: 1.6;
+    padding: 14px 16px;
+    font-style: italic;
+    transition: background 0.2s;
+  }
+  .aff-textarea:focus {
+    outline: none;
+    background: var(--white);
+  }
+  .aff-textarea::placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+  .aff-hint {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    padding: 0 16px 12px;
+  }
+
+  /* ── Affirmations list header ── */
+  .aff-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .aff-section-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-light);
+  }
+  .count-badge {
+    background: var(--goodlife-pale);
+    color: var(--goodlife-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Affirmation cards ── */
+  .aff-list { display: flex; flex-direction: column; gap: 8px; }
+  .aff-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--goodlife);
+    border-radius: var(--radius-lg);
+    padding: 14px 14px 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    box-shadow: var(--shadow-soft);
+    transition: box-shadow 0.15s;
+  }
+  .aff-card:hover { box-shadow: var(--shadow-card); }
+  .aff-card-body { flex: 1; min-width: 0; }
+  .aff-card-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .aff-i-am {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--goodlife-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 5px;
+  }
+  .aff-phrase { font-style: italic; }
+  .aff-date-stamp {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 5px;
+  }
+
+  /* Affirmation card edit textarea */
+  .aff-card-edit {
+    width: 100%;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--ink);
+    resize: none;
+    line-height: 1.6;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+  }
+  .aff-card-edit:focus {
+    border-color: var(--goodlife);
+    background: var(--white);
+  }
+
+  .aff-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── Delete confirmation modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(45,42,38,0.38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    animation: fadeIn 0.15s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    box-shadow: 0 8px 32px rgba(45,42,38,0.13);
+    border: 1px solid var(--border);
+    max-width: 360px;
+    width: 100%;
+    animation: slideUp 0.18s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .modal-preview-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.6;
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-style: italic;
+    border: 1px solid var(--border);
+    word-break: break-word;
+  }
+  .modal-warning {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-bottom: 20px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .modal-keep-btn {
+    background: var(--white);
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    padding: 9px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .modal-keep-btn:hover { border-color: var(--ink-faint); }
+  .modal-delete-btn {
+    background: #FFF0EE;
+    color: #D95B47;
+    border: 1.5px solid #FCCCC6;
+    border-radius: 100px;
+    padding: 9px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .modal-delete-btn:hover { background: #FFE4E1; border-color: #D95B47; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-top">
+    <span class="header-icon">☀️</span>
+    <h1>GoodLife HQ</h1>
+  </div>
+  <div class="subtitle">✦ Your daily space for gratitude and affirmations</div>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('gratitude')">Gratitude</button>
+    <button class="tab-btn" onclick="switchTab('affirmations')">Affirmations</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ── Gratitude Tab ── -->
+  <div id="tab-gratitude" class="tab-panel active">
+    <p class="tab-intro">Capture what you're grateful for today. Over time, it becomes a reminder of the good in each day.</p>
+
+    <div class="input-card">
+      <textarea id="g-input" placeholder="What are you grateful for today?"></textarea>
+      <div class="input-card-footer">
+        <span class="input-hint">Enter to add &nbsp;·&nbsp; Shift+Enter for a new line</span>
+        <button class="add-btn" onclick="addGratitude()">+ Add entry</button>
+      </div>
+    </div>
+
+    <div id="g-list"></div>
+  </div>
+
+  <!-- ── Affirmations Tab ── -->
+  <div id="tab-affirmations" class="tab-panel">
+    <p class="tab-intro">Capture your "I am" statements and let them grow over time into a collection of the truths, strengths, and possibilities you are claiming for yourself.</p>
+
+    <div class="aff-input-card">
+      <div class="aff-prefix-bar">I am...</div>
+      <textarea class="aff-textarea" id="aff-input" placeholder="...enough, just as I am.&#10;...building something meaningful."></textarea>
+      <div class="aff-hint">Press Enter to save each affirmation</div>
+    </div>
+
+    <div class="aff-section-header">
+      <span class="aff-section-title">Your affirmations</span>
+      <span class="count-badge" id="aff-count">0</span>
+    </div>
+    <div id="aff-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──
+let state = {
+  gratitude: [],    // { id, text, date }
+  affirmations: []  // { id, text, date }
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('goodlife-hq');
+    if (saved) state = JSON.parse(saved);
+  } catch(e) {}
+}
+
+function saveState() {
+  localStorage.setItem('goodlife-hq', JSON.stringify(state));
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// ── Tabs ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.textContent.toLowerCase().startsWith(name.slice(0,4))) b.classList.add('active');
+  });
+}
+
+// ── Date helpers ──
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function formatDateLabel(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+  date.setHours(0,0,0,0);
+  if (date.getTime() === today.getTime()) return 'Today';
+  if (date.getTime() === yesterday.getTime()) return 'Yesterday';
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function formatShortDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Delete confirmation modal ──
+function showDeleteModal(previewText, onConfirm) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-title">Delete this entry?</div>
+      <div class="modal-preview-text">${escHtml(previewText)}</div>
+      <div class="modal-warning">This can't be undone.</div>
+      <div class="modal-actions">
+        <button class="modal-keep-btn" id="modal-keep">Keep it</button>
+        <button class="modal-delete-btn" id="modal-confirm">Yes, delete</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('modal-keep').onclick = () => overlay.remove();
+  document.getElementById('modal-confirm').onclick = () => { overlay.remove(); onConfirm(); };
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ── Gratitude ──
+function addGratitude() {
+  const input = document.getElementById('g-input');
+  const text = input.value.trim();
+  if (!text) return;
+  state.gratitude.unshift({ id: uid(), text, date: todayISO() });
+  saveState();
+  input.value = '';
+  input.style.height = 'auto';
+  renderGratitude();
+}
+
+function deleteGratitude(id) {
+  const item = state.gratitude.find(g => g.id === id);
+  if (!item) return;
+  showDeleteModal(item.text, () => {
+    state.gratitude = state.gratitude.filter(g => g.id !== id);
+    saveState();
+    renderGratitude();
+  });
+}
+
+function startEditGratitude(id) {
+  const item = state.gratitude.find(g => g.id === id);
+  const textEl = document.getElementById('g-text-' + id);
+  const actionsEl = document.getElementById('g-actions-' + id);
+  textEl.outerHTML = `
+    <div class="g-edit-wrap" id="g-edit-wrap-${id}">
+      <textarea class="g-text-edit" id="g-edit-${id}">${escHtml(item.text)}</textarea>
+      <div class="g-edit-actions">
+        <button class="small-btn save" onclick="saveEditGratitude('${id}')">Save changes</button>
+        <button class="small-btn" onclick="renderGratitude()">Keep it</button>
+      </div>
+    </div>`;
+  actionsEl.style.display = 'none';
+  const ta = document.getElementById('g-edit-' + id);
+  ta.focus();
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+
+function saveEditGratitude(id) {
+  const ta = document.getElementById('g-edit-' + id);
+  const text = ta.value.trim();
+  if (!text) return;
+  const item = state.gratitude.find(g => g.id === id);
+  if (item) item.text = text;
+  saveState();
+  renderGratitude();
+}
+
+function renderGratitude() {
+  const container = document.getElementById('g-list');
+  if (!state.gratitude.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">☀️</span>
+        <div class="empty-title">Nothing here yet.</div>
+        <div class="empty-sub">Every good day starts somewhere.</div>
+        <button class="empty-btn" onclick="document.getElementById('g-input').focus()">+ Write your first gratitude</button>
+      </div>`;
+    return;
+  }
+
+  const groups = {};
+  state.gratitude.forEach(g => {
+    if (!groups[g.date]) groups[g.date] = [];
+    groups[g.date].push(g);
+  });
+  const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+  container.innerHTML = sortedDates.map(date => `
+    <div class="date-section">
+      <div class="date-section-header">
+        <span class="date-section-label">${formatDateLabel(date)}</span>
+        <span class="date-section-count">${groups[date].length} ${groups[date].length === 1 ? 'entry' : 'entries'}</span>
+      </div>
+      <div class="date-entries">
+        ${groups[date].map(g => `
+          <div class="g-entry" id="g-entry-${g.id}">
+            <span class="g-bullet">✦</span>
+            <span class="g-text" id="g-text-${g.id}">${escHtml(g.text)}</span>
+            <div class="g-entry-actions" id="g-actions-${g.id}">
+              <button class="icon-btn edit" onclick="startEditGratitude('${g.id}')" title="Edit">✏️</button>
+              <button class="icon-btn delete" onclick="deleteGratitude('${g.id}')" title="Delete">🗑️</button>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── Affirmations ──
+function addAffirmation(rawText) {
+  const text = (rawText || '').trim().replace(/^i\s+am\s*/i, '').trim();
+  if (!text) return;
+  state.affirmations.unshift({ id: uid(), text, date: todayISO() });
+  saveState();
+  renderAffirmations();
+}
+
+function deleteAffirmation(id) {
+  const item = state.affirmations.find(a => a.id === id);
+  if (!item) return;
+  showDeleteModal('I am ' + item.text, () => {
+    state.affirmations = state.affirmations.filter(a => a.id !== id);
+    saveState();
+    renderAffirmations();
+  });
+}
+
+function startEditAffirmation(id) {
+  const item = state.affirmations.find(a => a.id === id);
+  const textEl = document.getElementById('aff-text-' + id);
+  const actionsEl = document.getElementById('aff-actions-' + id);
+  textEl.outerHTML = `
+    <div class="g-edit-wrap" id="aff-edit-wrap-${id}">
+      <textarea class="aff-card-edit" id="aff-edit-${id}">${escHtml(item.text)}</textarea>
+      <div class="g-edit-actions">
+        <button class="small-btn save" onclick="saveEditAffirmation('${id}')">Save changes</button>
+        <button class="small-btn" onclick="renderAffirmations()">Keep it</button>
+      </div>
+    </div>`;
+  actionsEl.style.display = 'none';
+  document.getElementById('aff-edit-' + id).focus();
+}
+
+function saveEditAffirmation(id) {
+  const ta = document.getElementById('aff-edit-' + id);
+  const text = ta.value.trim().replace(/^i\s+am\s*/i, '').trim();
+  if (!text) return;
+  const item = state.affirmations.find(a => a.id === id);
+  if (item) item.text = text;
+  saveState();
+  renderAffirmations();
+}
+
+function renderAffirmations() {
+  const container = document.getElementById('aff-list');
+  document.getElementById('aff-count').textContent = state.affirmations.length;
+
+  if (!state.affirmations.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">✨</span>
+        <div class="empty-title">Your collection starts here.</div>
+        <div class="empty-sub">Claim something true about yourself today.</div>
+        <button class="empty-btn" onclick="document.getElementById('aff-input').focus()">+ Add your first affirmation</button>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="aff-list">${
+    state.affirmations.map(a => `
+      <div class="aff-card" id="aff-card-${a.id}">
+        <div class="aff-card-body">
+          <div class="aff-card-text" id="aff-text-${a.id}">
+            <span class="aff-i-am">I am</span><span class="aff-phrase">${escHtml(a.text)}</span>
+          </div>
+          <div class="aff-date-stamp">${formatShortDate(a.date)}</div>
+        </div>
+        <div class="aff-card-actions" id="aff-actions-${a.id}">
+          <button class="icon-btn edit" onclick="startEditAffirmation('${a.id}')" title="Edit">✏️</button>
+          <button class="icon-btn delete" onclick="deleteAffirmation('${a.id}')" title="Delete">🗑️</button>
+        </div>
+      </div>`).join('')
+  }</div>`;
+}
+
+// ── Keyboard listeners ──
+document.getElementById('g-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    addGratitude();
+  }
+});
+
+document.getElementById('aff-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const val = this.value.trim();
+    if (val) {
+      addAffirmation(val);
+      this.value = '';
+      this.style.height = 'auto';
+    }
+  }
+});
+
+// ── Init ──
+loadState();
+renderGratitude();
+renderAffirmations();
+</script>
+
+</body>
+</html>
