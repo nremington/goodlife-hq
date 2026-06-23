@@ -199,7 +199,21 @@
     padding: 12px 16px 10px;
     border-bottom: 1px solid var(--border);
     background: var(--goodlife-pale);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
   }
+  .date-section-header:hover { background: #fdf0c0; }
+  .date-section-left { display: flex; align-items: center; gap: 10px; }
+  .date-chevron {
+    font-size: 10px;
+    color: var(--goodlife-deep);
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .date-section.collapsed .date-chevron { transform: rotate(-90deg); }
+  .date-section.collapsed .date-entries { display: none; }
+  .date-section.collapsed .date-section-header { border-bottom: none; }
   .date-section-label {
     font-family: 'DM Sans', sans-serif;
     font-size: 11px;
@@ -399,7 +413,6 @@
     letter-spacing: 0.08em;
     color: var(--goodlife-dark);
   }
-  /* Affirmation textarea is a note box: cream bg, turns white on focus */
   .aff-textarea {
     width: 100%;
     border: none;
@@ -410,9 +423,10 @@
     resize: none;
     min-height: 64px;
     line-height: 1.6;
-    padding: 14px 16px;
+    padding: 16px 16px 4px;
     font-style: italic;
     transition: background 0.2s;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
   .aff-textarea:focus {
     outline: none;
@@ -518,9 +532,10 @@
 
   .aff-card-actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 4px;
     flex-shrink: 0;
+    align-items: flex-start;
   }
 
   /* ── Delete confirmation modal ── */
@@ -642,9 +657,8 @@
     <p class="tab-intro">Capture your "I am" statements and let them grow over time into a collection of the truths, strengths, and possibilities you are claiming for yourself.</p>
 
     <div class="aff-input-card">
-      <div class="aff-prefix-bar">I am...</div>
-      <textarea class="aff-textarea" id="aff-input" placeholder="...enough, just as I am.&#10;...building something meaningful."></textarea>
-      <div class="aff-hint">Press Enter to save each affirmation</div>
+      <textarea class="aff-textarea" id="aff-input" placeholder="I am enough, just as I am.&#10;I will figure this out.&#10;I have everything I need to begin."></textarea>
+      <div class="aff-hint">Type a statement and press Enter to add it to your collection.</div>
     </div>
 
     <div class="aff-section-header">
@@ -863,10 +877,16 @@ function renderGratitude() {
   });
   const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
 
-  container.innerHTML = sortedDates.map(date => `
-    <div class="date-section">
-      <div class="date-section-header">
-        <span class="date-section-label">${formatDateLabel(date)}</span>
+  container.innerHTML = sortedDates.map((date, i) => {
+    const isToday = date === todayISO();
+    const collapsed = !isToday ? 'collapsed' : '';
+    return `
+    <div class="date-section ${collapsed}" id="date-section-${date}">
+      <div class="date-section-header" onclick="toggleDateSection('${date}')">
+        <div class="date-section-left">
+          <span class="date-chevron">▼</span>
+          <span class="date-section-label">${formatDateLabel(date)}</span>
+        </div>
         <span class="date-section-count">${groups[date].length} ${groups[date].length === 1 ? 'entry' : 'entries'}</span>
       </div>
       <div class="date-entries">
@@ -880,12 +900,14 @@ function renderGratitude() {
             </div>
           </div>`).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ── Affirmations ──
 function addAffirmation(rawText) {
-  const text = (rawText || '').trim().replace(/^i\s+am\s*/i, '').trim();
+  // Strip a lone leading "I " if user typed it, since the prefix bar already shows I
+  const text = (rawText || '').trim().replace(/^I\s+/i, '').trim();
   if (!text) return;
   state.affirmations.unshift({ id: uid(), text, date: todayISO() });
   saveState();
@@ -895,7 +917,7 @@ function addAffirmation(rawText) {
 function deleteAffirmation(id) {
   const item = state.affirmations.find(a => a.id === id);
   if (!item) return;
-  showDeleteModal('I am ' + item.text, () => {
+  showDeleteModal('I ' + item.text, () => {
     state.affirmations = state.affirmations.filter(a => a.id !== id);
     saveState();
     renderAffirmations();
@@ -920,7 +942,7 @@ function startEditAffirmation(id) {
 
 function saveEditAffirmation(id) {
   const ta = document.getElementById('aff-edit-' + id);
-  const text = ta.value.trim().replace(/^i\s+am\s*/i, '').trim();
+  const text = ta.value.trim().replace(/^I\s+/i, '').trim();
   if (!text) return;
   const item = state.affirmations.find(a => a.id === id);
   if (item) item.text = text;
@@ -948,7 +970,7 @@ function renderAffirmations() {
       <div class="aff-card" id="aff-card-${a.id}">
         <div class="aff-card-body">
           <div class="aff-card-text" id="aff-text-${a.id}">
-            <span class="aff-i-am">I am</span><span class="aff-phrase">${escHtml(a.text)}</span>
+            <span class="aff-i-am">I </span><span class="aff-phrase">${escHtml(a.text)}</span>
           </div>
           <div class="aff-date-stamp">${formatShortDate(a.date)}</div>
         </div>
@@ -958,6 +980,12 @@ function renderAffirmations() {
         </div>
       </div>`).join('')
   }</div>`;
+}
+
+// ── Collapsible date sections ──
+function toggleDateSection(date) {
+  const section = document.getElementById('date-section-' + date);
+  if (section) section.classList.toggle('collapsed');
 }
 
 // ── Keyboard listeners ──
